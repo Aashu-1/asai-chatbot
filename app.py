@@ -35,9 +35,12 @@ chunks = []
 if DOCUMENT_PATH:
     try:
         resume = load_resume(DOCUMENT_PATH)
-        chunks = chunk_text(resume)
-        embeddings = embed_chunks(chunks)
-        store_in_chroma(chunks, embeddings)
+        if resume and len(resume) > 50:
+            chunks = chunk_text(resume)
+            embeddings = embed_chunks(chunks)
+            store_in_chroma(chunks, embeddings)
+        else:
+            print("Resume content too short or empty")
     except Exception as e:
         print(f"Failed to load resume: {e}")
 
@@ -176,16 +179,26 @@ def respond(message, chat_history):
 # ----------------------------
 # UI
 # ----------------------------
-with gr.Blocks() as demo:
+css = """
+body {
+    background-color: #343541;
+}
+.gradio-container {
+    max-width: 900px !important;
+    margin: auto;
+}
+"""
+
+with gr.Blocks(css=css) as demo:
 
     gr.Markdown(
         """
-        # 🤖 ChatGPT Clone  
+        # 🤖 AshAI  
         Powered by Groq ⚡  
         """
     )
 
-    chatbot = gr.Chatbot(height=500)
+    chatbot = gr.Chatbot(height=500, type="messages")
 
     msg = gr.Textbox(
         placeholder="Message...",
@@ -203,15 +216,4 @@ with gr.Blocks() as demo:
 # LAUNCH
 # ----------------------------
 if __name__ == "__main__":
-    demo.launch(
-        allowed_paths=["/tmp"],
-        css="""
-        body {
-            background-color: #343541;
-        }
-        .gradio-container {
-            max-width: 900px !important;
-            margin: auto;
-        }
-        """
-    )
+    demo.launch(allowed_paths=["/tmp"])
