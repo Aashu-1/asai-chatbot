@@ -1,5 +1,4 @@
 import gradio as gr
-from openai import OpenAI
 from dotenv import load_dotenv
 import os
 from chroma_db import retrieve_context
@@ -20,6 +19,7 @@ DOCUMENT_PATH = os.getenv("DOCUMENT_PATH", "")
 HF_SPACE_ID = os.getenv("HF_SPACE_ID")
 if HF_SPACE_ID:
     PERSIST_DIR = "/tmp/chroma_db"
+
 else:
     PERSIST_DIR = "./chroma_db"
 
