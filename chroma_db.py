@@ -33,4 +33,7 @@ def retrieve_context(message, embed_fn):
         include=["documents"]
     )
 
+    if not results["documents"] or not results["documents"][0]:
+        return ""
+    
     return "\n".join(results["documents"][0])

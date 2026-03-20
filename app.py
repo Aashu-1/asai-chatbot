@@ -1,4 +1,5 @@
 import gradio as gr
+from openai import OpenAI
 from dotenv import load_dotenv
 import os
 from chroma_db import retrieve_context
