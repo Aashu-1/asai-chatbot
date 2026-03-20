@@ -20,7 +20,6 @@ DOCUMENT_PATH = os.getenv("DOCUMENT_PATH", "")
 HF_SPACE_ID = os.getenv("HF_SPACE_ID")
 if HF_SPACE_ID:
     PERSIST_DIR = "/tmp/chroma_db"
-
 else:
     PERSIST_DIR = "./chroma_db"
 
@@ -35,12 +34,9 @@ chunks = []
 if DOCUMENT_PATH:
     try:
         resume = load_resume(DOCUMENT_PATH)
-        if resume and len(resume) > 50:
-            chunks = chunk_text(resume)
-            embeddings = embed_chunks(chunks)
-            store_in_chroma(chunks, embeddings)
-        else:
-            print("Resume content too short or empty")
+        chunks = chunk_text(resume)
+        embeddings = embed_chunks(chunks)
+        store_in_chroma(chunks, embeddings)
     except Exception as e:
         print(f"Failed to load resume: {e}")
 
@@ -179,26 +175,16 @@ def respond(message, chat_history):
 # ----------------------------
 # UI
 # ----------------------------
-css = """
-body {
-    background-color: #343541;
-}
-.gradio-container {
-    max-width: 900px !important;
-    margin: auto;
-}
-"""
-
-with gr.Blocks(css=css) as demo:
+with gr.Blocks() as demo:
 
     gr.Markdown(
         """
-        # 🤖 AshAI  
+        # 🤖 ChatGPT Clone  
         Powered by Groq ⚡  
         """
     )
 
-    chatbot = gr.Chatbot(height=500, type="messages")
+    chatbot = gr.Chatbot(height=500)
 
     msg = gr.Textbox(
         placeholder="Message...",
@@ -210,10 +196,3 @@ with gr.Blocks(css=css) as demo:
 
     msg.submit(respond, [msg, chatbot], [msg, chatbot])
     clear.click(lambda: ([], ""), None, [chatbot, msg])
-
-
-# ----------------------------
-# LAUNCH
-# ----------------------------
-if __name__ == "__main__":
-    demo.launch(allowed_paths=["/tmp"])
