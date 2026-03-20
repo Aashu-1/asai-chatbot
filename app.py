@@ -8,6 +8,8 @@ from embeddings import embed_chunks
 from chroma_db import store_in_chroma
 from tools import tools
 from send_email import send_email_to_owner
+import json
+
 
 # ----------------------------
 # LOAD ENV
@@ -130,7 +132,7 @@ Context:
         tool_call = msg.tool_calls[0]
         function_name = tool_call.function.name
 
-        arguments = eval(tool_call.function.arguments)
+        arguments = json.loads(tool_call.function.arguments)
 
         if function_name == "collect_user_info":
             if not arguments["name"] or not arguments["email"]:
