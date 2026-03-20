@@ -18,10 +18,7 @@ DOCUMENT_PATH = os.getenv("DOCUMENT_PATH", "")
 
 # For Hugging Face Spaces - use persistent storage
 HF_SPACE_ID = os.getenv("HF_SPACE_ID")
-if HF_SPACE_ID:
-    PERSIST_DIR = "/tmp/chroma_db"
-else:
-    PERSIST_DIR = "./chroma_db"
+PERSIST_DIR = "./chroma_db"
 
 client = OpenAI(api_key=GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 
@@ -31,14 +28,19 @@ client = OpenAI(api_key=GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 # ----------------------------
 resume = None
 chunks = []
-if DOCUMENT_PATH:
-    try:
-        resume = load_resume(DOCUMENT_PATH)
-        chunks = chunk_text(resume)
-        embeddings = embed_chunks(chunks)
-        store_in_chroma(chunks, embeddings)
-    except Exception as e:
-        print(f"Failed to load resume: {e}")
+def initialize_db():
+    if DOCUMENT_PATH:
+        try:
+            if not os.path.exists(PERSIST_DIR) or not os.listdir(PERSIST_DIR):
+                print("🔄 Creating embeddings...")
+                resume = load_resume(DOCUMENT_PATH)
+                chunks = chunk_text(resume)
+                embeddings = embed_chunks(chunks)
+                store_in_chroma(chunks, embeddings)
+            else:
+                print("✅ Using existing ChromaDB")
+        except Exception as e:
+            print(f"Failed to load resume: {e}")
 
 
 
@@ -175,15 +177,30 @@ def respond(message, chat_history):
 # ----------------------------
 # UI
 # ----------------------------
-with gr.Blocks(title="AshAI Chatbot") as demo:
-    gr.Markdown("# 🤖 AshAI\nPowered by Groq ⚡")
-    
-    with gr.Row():
-        with gr.Column():
-            chatbot = gr.Chatbot(height=500, type="messages")
-            with gr.Row():
-                msg = gr.Textbox(placeholder="Ask me anything...", scale=7)
-                clear = gr.Button("Clear")
-    
+with gr.Blocks() as demo:
+
+    gr.Markdown(
+        """
+        # 🤖 AshAi  
+        Powered by Groq ⚡  
+        """
+    )
+
+    chatbot = gr.Chatbot(height=500)
+
+    msg = gr.Textbox(
+        placeholder="Message...",
+        container=False,
+        scale=7
+    )
+
+    clear = gr.Button("Clear Chat")
+
     msg.submit(respond, [msg, chatbot], [msg, chatbot])
-    clear.click(fn=lambda: ([], ""), outputs=[chatbot, msg])
+    clear.click(lambda: ([], ""), None, [chatbot, msg])
+
+
+
+if __name__ == "__main__":
+    initialize_db()
+    demo.launch()
