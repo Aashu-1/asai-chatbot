@@ -175,24 +175,15 @@ def respond(message, chat_history):
 # ----------------------------
 # UI
 # ----------------------------
-with gr.Blocks() as demo:
-
-    gr.Markdown(
-        """
-        # 🤖 ChatGPT Clone  
-        Powered by Groq ⚡  
-        """
-    )
-
-    chatbot = gr.Chatbot(height=500)
-
-    msg = gr.Textbox(
-        placeholder="Message...",
-        container=False,
-        scale=7
-    )
-
-    clear = gr.Button("Clear Chat")
-
+with gr.Blocks(title="AshAI Chatbot") as demo:
+    gr.Markdown("# 🤖 AshAI\nPowered by Groq ⚡")
+    
+    with gr.Row():
+        with gr.Column():
+            chatbot = gr.Chatbot(height=500, type="messages")
+            with gr.Row():
+                msg = gr.Textbox(placeholder="Ask me anything...", scale=7)
+                clear = gr.Button("Clear")
+    
     msg.submit(respond, [msg, chatbot], [msg, chatbot])
-    clear.click(lambda: ([], ""), None, [chatbot, msg])
+    clear.click(fn=lambda: ([], ""), outputs=[chatbot, msg])
