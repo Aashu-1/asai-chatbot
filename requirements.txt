@@ -1,5 +1,5 @@
 groq
-gradio
+gradio==4.44.1
 python-dotenv
 chromadb
 sentence-transformers
