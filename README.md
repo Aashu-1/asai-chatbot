@@ -3,11 +3,9 @@ title: AshAI Chatbot
 emoji: 🤖
 colorFrom: blue
 colorTo: purple
-sdk: gradio
-sdk_version: 4.44.0
-app_file: app.py
+sdk: docker
+app_file: Dockerfile
 pinned: false
-python_version: "3.11"
 ---
 
 # AshAI - AI Chatbot
