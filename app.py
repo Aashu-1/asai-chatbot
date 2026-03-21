@@ -2,14 +2,12 @@ import gradio as gr
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
-from chroma_db import retrieve_context
+import json
+from chroma_db import retrieve_context, store_in_chroma
 from pdf_chunk import load_resume, chunk_text
 from embeddings import embed_chunks
-from chroma_db import store_in_chroma
 from tools import tools
 from send_email import send_email_to_owner
-import json
-
 
 # ----------------------------
 # LOAD ENV
@@ -17,19 +15,13 @@ import json
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 DOCUMENT_PATH = os.getenv("DOCUMENT_PATH", "")
-
-# For Hugging Face Spaces - use persistent storage
-HF_SPACE_ID = os.getenv("HF_SPACE_ID")
 PERSIST_DIR = "./chroma_db"
 
 client = OpenAI(api_key=GROQ_API_KEY, base_url="https://api.groq.com/openai/v1")
 
-
 # ----------------------------
 # LOAD RESUME
 # ----------------------------
-resume = None
-chunks = []
 def initialize_db():
     if DOCUMENT_PATH:
         try:
@@ -43,6 +35,8 @@ def initialize_db():
                 print("✅ Using existing ChromaDB")
         except Exception as e:
             print(f"Failed to load resume: {e}")
+
+initialize_db()
 
 
 
@@ -198,11 +192,7 @@ with gr.Blocks() as demo:
 
     clear = gr.Button("Clear Chat")
 
-    msg.submit(respond, [msg, chatbot], [msg, chatbot], api_name=False)
+    msg.submit(respond, [msg, chatbot], [msg, chatbot])
     clear.click(lambda: ([], ""), None, [chatbot, msg])
 
-
-
-if __name__ == "__main__":
-    initialize_db()
-    demo.launch(server_name="0.0.0.0", server_port=7860, show_api=False)
+demo.launch()
