@@ -1,5 +1,5 @@
 ---
-title: AshAI Chatbot
+title: AshAI
 emoji: 🤖
 colorFrom: blue
 colorTo: purple
