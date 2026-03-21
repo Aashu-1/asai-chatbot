@@ -1,6 +1,7 @@
 groq
 openai>=1.0.0
 gradio
+huggingface_hub==0.26.0
 python-dotenv
 chromadb
 sentence-transformers
