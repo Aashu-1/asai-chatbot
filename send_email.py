@@ -1,40 +1,24 @@
-import smtplib
-from email.mime.text import MIMEText
-import os
+import resend
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 def send_email_to_owner(user_name, user_email, query):
-    print("Request received for tool calling ")
-    print("username",user_name)
-    print("user's email",user_email)
-    print("query asked",query)
-    sender = os.getenv("EMAIL_USER")
-    password = os.getenv("EMAIL_PASS")
-    receiver = os.getenv("OWNER_EMAIL")
-
-    subject = f"New Lead from AshAI: {user_name}"
-
-    body = f"""
-    New query received!
-
-    Name: {user_name}
-    Email: {user_email}
-    Query: {query}
-    """
-
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = sender
-    msg["To"] = receiver
-
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(sender, password)
-            server.send_message(msg)
+        response = resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": os.getenv("OWNER_EMAIL"),
+            "subject": f"New Lead from AshAI: {user_name}",
+            "html": f"""
+                <h3>New Lead!</h3>
+                <p><strong>Name:</strong> {user_name}</p>
+                <p><strong>Email:</strong> {user_email}</p>
+                <p><strong>Query:</strong> {query}</p>
+            """
+        })
         return True
     except Exception as e:
-        print("Email error:", e)
+        print(f"Email error: {e}")
         return False

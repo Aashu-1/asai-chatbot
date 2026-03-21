@@ -1,6 +1,7 @@
 groq
 openai>=1.0.0
 gradio>=5.0.0
+resend
 python-dotenv
 chromadb
 sentence-transformers
