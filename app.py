@@ -198,11 +198,11 @@ with gr.Blocks() as demo:
 
     clear = gr.Button("Clear Chat")
 
-    msg.submit(respond, [msg, chatbot], [msg, chatbot])
+    msg.submit(respond, [msg, chatbot], [msg, chatbot], api_name=False)
     clear.click(lambda: ([], ""), None, [chatbot, msg])
 
 
 
 if __name__ == "__main__":
     initialize_db()
-    demo.launch(share=True)
+    demo.launch(show_api=False)

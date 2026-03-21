@@ -1,6 +1,7 @@
 groq
 openai>=1.0.0
-gradio
+gradio==4.44.1
+gradio_client==1.3.0
 huggingface_hub==0.26.0
 python-dotenv
 chromadb
